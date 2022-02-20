@@ -1,13 +1,13 @@
 # Fdb version 3
-["bibtex main"] 1645398415 "main.aux" "main.bbl" "main" 1645398417
-  "./../MRILesion.bib" 0 -1 0 ""
-  "biblatex-ieee.bst" 0 -1 0 ""
-  "main.aux" 1645398417 362 a73eadbd424520bbd8696029d9a69e9f "pdflatex"
+["bibtex main"] 1645399117 "main.aux" "main.bbl" "main" 1645399119
+  "/usr/local/texlive/2021/texmf-dist/bibtex/bst/IEEEtran/IEEEtran.bst" 1440712899 57748 7c8250ecf02814ce6ddc0cdbb63df1dd ""
+  "main.aux" 1645399119 302 71008821f46eeb0aaa650c0cc2c3d6cc "pdflatex"
+  "refs.bib" 1645399019 10991 bf352e31e54cad3813f5c586167f8c14 ""
   (generated)
   "main.bbl"
   "main.blg"
-["pdflatex"] 1645398415 "/Users/xujinliu/Documents/TexFiles/CourseNotes/VideoSignalProcessing/MRI_Lesion_Detection/Final Proposal/main.tex" "main.pdf" "main" 1645398417
-  "/Users/xujinliu/Documents/TexFiles/CourseNotes/VideoSignalProcessing/MRI_Lesion_Detection/Final Proposal/main.tex" 1645398412 3009 28925ce1f09f1feacb339231c5902593 ""
+["pdflatex"] 1645399117 "/Users/xujinliu/Documents/TexFiles/CourseNotes/VideoSignalProcessing/MRI_Lesion_Detection/Final Proposal/main.tex" "main.pdf" "main" 1645399119
+  "/Users/xujinliu/Documents/TexFiles/CourseNotes/VideoSignalProcessing/MRI_Lesion_Detection/Final Proposal/main.tex" 1645399114 2952 77d3881d7e734cffb94041a82b79b773 ""
   "/usr/local/texlive/2021/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2021/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1246382020 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
   "/usr/local/texlive/2021/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy8.tfm" 1246382020 1120 200be8b775682cdf80acad4be5ef57e4 ""
@@ -20,7 +20,6 @@
   "/usr/local/texlive/2021/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm" 1246382020 908 2921f8a10601f252058503cc6570e581 ""
   "/usr/local/texlive/2021/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm" 1246382020 940 228d6584342e91276bf566bcf9716b83 ""
   "/usr/local/texlive/2021/texmf-dist/fonts/tfm/public/cm/cmbsy10.tfm" 1136768653 1116 4e6ba9d7914baa6482fd69f67d126380 ""
-  "/usr/local/texlive/2021/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "/usr/local/texlive/2021/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1136768653 1324 c910af8c371558dc20f2d7822f66fe64 ""
   "/usr/local/texlive/2021/texmf-dist/fonts/tfm/public/cm/cmbx6.tfm" 1136768653 1344 8a0be4fe4d376203000810ad4dc81558 ""
   "/usr/local/texlive/2021/texmf-dist/fonts/tfm/public/cm/cmbx8.tfm" 1136768653 1332 1fde11373e221473104d6cc5993f046e ""
@@ -36,7 +35,6 @@
   "/usr/local/texlive/2021/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm" 1136768653 1124 6c73e740cf17375f03eec0ee63599741 ""
   "/usr/local/texlive/2021/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm" 1136768653 1116 933a60c408fc0a863a92debe84b2d294 ""
   "/usr/local/texlive/2021/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm" 1136768653 1120 8b7d695260f3cff42e636090a8002094 ""
-  "/usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb" 1248133631 34811 78b52f49e893bcba91bd7581cdc144c0 ""
   "/usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb" 1248133631 32080 340ef9bf63678554ee606688e7b5339d ""
   "/usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1248133631 35752 024fb6c41858982481f6968b5fc26508 ""
   "/usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb" 1248133631 32722 d7379af29a190c3f453aba36302ff5a9 ""
@@ -208,9 +206,9 @@
   "/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1616695603 5169178 a2ce6e2d73f603b690db6777d06dbccb ""
   "/usr/local/texlive/2021/texmf-var/web2c/pdftex/pdflatex.fmt" 1642099635 2724738 0ab3baccfc06ca5e273e643dfebf7da1 ""
   "/usr/local/texlive/2021/texmf.cnf" 1616695596 577 4c1911a7228e554c6032256d3cf5567d ""
-  "main.aux" 1645398417 362 a73eadbd424520bbd8696029d9a69e9f "pdflatex"
-  "main.bbl" 1645397302 0 d41d8cd98f00b204e9800998ecf8427e "bibtex main"
-  "main.tex" 1645398412 3009 28925ce1f09f1feacb339231c5902593 ""
+  "main.aux" 1645399119 302 71008821f46eeb0aaa650c0cc2c3d6cc "pdflatex"
+  "main.bbl" 1645399117 877 628a2a8c68e066122d1514411e0b8455 "bibtex main"
+  "main.tex" 1645399114 2952 77d3881d7e734cffb94041a82b79b773 ""
   (generated)
   "main.aux"
   "main.log"

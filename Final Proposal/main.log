@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.1.13)  20 FEB 2022 18:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.1.13)  20 FEB 2022 18:18
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -680,32 +680,28 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 LaTeX Font Info:    Trying to load font information for U+msb on input line 61.
  (/usr/local/texlive/2021/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
+) (./main.bbl
 
-LaTeX Warning: Citation `devlinBERTPretrainingDeep2019' on page 1 undefined on input line 63.
+LaTeX Warning: Empty `thebibliography' environment on input line 24.
 
-(./main.bbl) [1
+) [1
 Non-PDF special ignored!
 <special> header=psfrag.pro
 
-{/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (./main.aux)
-
-LaTeX Warning: There were undefined references.
-
- ) 
+{/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 27634 strings out of 478994
- 701723 string characters out of 5858184
+ 27640 strings out of 478994
+ 701837 string characters out of 5858184
  1350863 words of memory out of 5000000
- 44638 multiletter control sequences out of 15000+600000
- 412056 words of font info for 58 fonts, out of 8000000 for 9000
+ 44645 multiletter control sequences out of 15000+600000
+ 411748 words of font info for 57 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  102i,6n,103p,822b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb>
-Output written on main.pdf (1 page, 49109 bytes).
+</usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb>
+Output written on main.pdf (1 page, 40647 bytes).
 PDF statistics:
- 31 PDF objects out of 1000 (max. 8388607)
- 22 compressed objects within 1 object stream
+ 27 PDF objects out of 1000 (max. 8388607)
+ 19 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 
