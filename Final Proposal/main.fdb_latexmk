@@ -1,13 +1,13 @@
 # Fdb version 3
-["bibtex main"] 1645399117 "main.aux" "main.bbl" "main" 1645399119
+["bibtex main"] 1645399283 "main.aux" "main.bbl" "main" 1645399285
+  "../refs.bib" 1645399255 10991 bf352e31e54cad3813f5c586167f8c14 ""
   "/usr/local/texlive/2021/texmf-dist/bibtex/bst/IEEEtran/IEEEtran.bst" 1440712899 57748 7c8250ecf02814ce6ddc0cdbb63df1dd ""
-  "main.aux" 1645399119 302 71008821f46eeb0aaa650c0cc2c3d6cc "pdflatex"
-  "refs.bib" 1645399019 10991 bf352e31e54cad3813f5c586167f8c14 ""
+  "main.aux" 1645399285 383 19361f02f06028e7ab678ca426cf9f82 "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
-["pdflatex"] 1645399117 "/Users/xujinliu/Documents/TexFiles/CourseNotes/VideoSignalProcessing/MRI_Lesion_Detection/Final Proposal/main.tex" "main.pdf" "main" 1645399119
-  "/Users/xujinliu/Documents/TexFiles/CourseNotes/VideoSignalProcessing/MRI_Lesion_Detection/Final Proposal/main.tex" 1645399114 2952 77d3881d7e734cffb94041a82b79b773 ""
+["pdflatex"] 1645399283 "/Users/xujinliu/Documents/TexFiles/CourseNotes/VideoSignalProcessing/MRI_Lesion_Detection/Final Proposal/main.tex" "main.pdf" "main" 1645399285
+  "/Users/xujinliu/Documents/TexFiles/CourseNotes/VideoSignalProcessing/MRI_Lesion_Detection/Final Proposal/main.tex" 1645399277 2989 f5282e13c60d174c5c5a25c953e78f0a ""
   "/usr/local/texlive/2021/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2021/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1246382020 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
   "/usr/local/texlive/2021/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy8.tfm" 1246382020 1120 200be8b775682cdf80acad4be5ef57e4 ""
@@ -206,9 +206,9 @@
   "/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1616695603 5169178 a2ce6e2d73f603b690db6777d06dbccb ""
   "/usr/local/texlive/2021/texmf-var/web2c/pdftex/pdflatex.fmt" 1642099635 2724738 0ab3baccfc06ca5e273e643dfebf7da1 ""
   "/usr/local/texlive/2021/texmf.cnf" 1616695596 577 4c1911a7228e554c6032256d3cf5567d ""
-  "main.aux" 1645399119 302 71008821f46eeb0aaa650c0cc2c3d6cc "pdflatex"
-  "main.bbl" 1645399117 877 628a2a8c68e066122d1514411e0b8455 "bibtex main"
-  "main.tex" 1645399114 2952 77d3881d7e734cffb94041a82b79b773 ""
+  "main.aux" 1645399285 383 19361f02f06028e7ab678ca426cf9f82 "pdflatex"
+  "main.bbl" 1645399283 1453 ac647a2325e25f9ab2b6959336394cfc "bibtex main"
+  "main.tex" 1645399277 2989 f5282e13c60d174c5c5a25c953e78f0a ""
   (generated)
   "main.aux"
   "main.log"
