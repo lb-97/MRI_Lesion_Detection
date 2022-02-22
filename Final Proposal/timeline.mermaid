@@ -1,0 +1,54 @@
+gantt
+    dateFormat  YYYY-MM-DD
+    title       MRI Pretraining Project
+    todayMarker off
+    excludes 2022-03-14, 2022-03-15, 2022-03-16, 2022-03-17, 2022-03-18, 2022-03-19, 2022-03-20
+    %% (`excludes` accepts specific dates in YYYY-MM-DD format, days of the week ("sunday") or "weekends", but not the word "weekdays".)
+
+    section Dataset
+    Apply for dataset usage             : 2022-02-20,2022-02-27
+    Pre-process                         : 2022-02-27,2022-03-03
+    Final touches                       : 2022-03-03,2022-03-06
+    Dataset ready                       : milestone, crit, 2022-03-06
+
+    section Literature
+    Find relevant papers             : 2022-02-20,2022-02-23
+    Read relevant papers             : 2022-02-23,2022-03-01
+    Write summaries                  : 2022-03-01,2022-03-06
+
+    section CNN
+    CNN Code                            : after api,2022-03-07
+    Pretraining Code                    : 2022-03-07,2022-03-12
+    CNN ready                           : milestone, crit, 2022-03-12
+
+    section Transformer
+    Transformer Code                            : after api, 2022-03-07
+    Pretraining Code                            : 2022-03-07,2022-03-12
+    Transformer ready                           : milestone, crit, 2022-03-12
+
+    section Training
+    Pretrain Transformer                : 2022-03-12, 7d
+    Pretrain CNN                        : 2022-03-12, 7d
+    Finetune Table 1                    : after tb1, 7d
+    Finetune Table 2                    : after tb2, 7d
+    Finetune Table 3                    : after tb3, 7d
+
+    section Integration
+    Pre-development contracting             : crit, api, 2022-02-20, 2022-02-24
+    Integration of models                   : 2022-03-24,2022-04-04
+    Integration ready                       : crit, milestone, 2022-04-04
+
+    section Finetuning
+    Classification pipeline                 : 2022-04-04,2022-04-08
+    Regression pipeline                     : 2022-04-08,2022-04-12
+    Segmentation pipeline                   : 2022-04-12,2022-04-18
+
+    section Experiments
+    Table 1 script                      : tb1, 2022-04-04,2022-04-11
+    Table 2 script                      : tb2, 2022-04-11,2022-04-18
+    Table 3 script                      : tb3, 2022-04-18,2022-04-25
+
+    section Documentations
+    Mid-term report                     : 2022-03-26,2022-04-07
+    Final presentation                  : 2022-04-25,2022-05-12
+    Final report                        : 2022-04-25,2022-05-16
