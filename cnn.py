@@ -1,13 +1,13 @@
 import os
-import numpy as np
-import nibabel as nib
 import torch
 import torch.nn as nn
+import numpy as np
 import random
+import nibabel as nib
 
 def positive_pair(data):
     [batch_size,q,h,w]=data.shape
-    ret=np.array(data)
+    ret=np.array(data.cpu())
     NOISE_R=0.7
     FLIP_R=0.6
     r1=random.random()
@@ -23,7 +23,7 @@ def positive_pair(data):
         ret=ret[:,:,::-1,:]
     if random.random()<0.6 or (r1>NOISE_R and r2>FLIP_R and r1>FLIP_R):
         ret=ret[:,:,:,::-1]
-    return torch.as_tensor(ret.copy())
+    return torch.as_tensor(ret.copy(), device=torch.device("cuda"))
 
 # Different shape on different slices
 class cnn_multi_dim(nn.Module):
@@ -133,30 +133,34 @@ def output(nets,images):
     return ret
 
 if __name__ == "__main__":
-    #182 218 182
-    print("Entered")
-    data=[]
-    datasize = 2 # For debug
-    for f in os.listdir('data/'):
-        if not f.endswith('nii.gz'):
-            continue
-        print(f"Found {f}...")
-        img = nib.load(os.path.join('data/', f))
-        print("Finished loading...")
-        imgdata=np.array(img.get_fdata())
-        print("Finished getting np...")
-        imgdata=MeanPool3d(imgdata,2)
-        print("Finished pooling...")
-        data.append(imgdata)
-        if datasize > 0 and len(data) > datasize:
-            break
-
-    data=np.array(data)
-
-# TODO: This takes forever!
-    print("loaded dataset")
-
-    batch_size=2
+    data=np.random.rand(12,91,109,91)*200
+    batch_size=3
     dataloader=torch.utils.data.DataLoader(dataset=data,batch_size=batch_size,shuffle=True)
-    cnns=train(dataloader,10,1e-5,40)
-
+    train(dataloader,2,1e-3,10)
+#     #182 218 182
+#     print("Entered")
+#     data=[]
+#     datasize = 2 # For debug
+#     for f in os.listdir('data/'):
+#         if not f.endswith('nii.gz'):
+#             continue
+#         print(f"Found {f}...")
+#         img = nib.load(os.path.join('data/', f))
+#         print("Finished loading...")
+#         imgdata=np.array(img.get_fdata())
+#         print("Finished getting np...")
+#         imgdata=MeanPool3d(imgdata,2)
+#         print("Finished pooling...")
+#         data.append(imgdata)
+#         if datasize > 0 and len(data) > datasize:
+#             break
+#
+#     data=np.array(data)
+#
+# # TODO: This takes forever!
+#     print("loaded dataset")
+#
+#     batch_size=2
+#     dataloader=torch.utils.data.DataLoader(dataset=data,batch_size=batch_size,shuffle=True)
+#     cnns=train(dataloader,10,1e-5,40)
+#
