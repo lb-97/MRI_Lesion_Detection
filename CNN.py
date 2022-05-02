@@ -4,19 +4,17 @@
 # In[1]:
 
 
-import numpy as np
 
 
 # In[2]:
 
-
+from tqdm import tqdm
 import torch
-import matplotlib
 import torch.nn as nn
+import numpy as np
 import random
-import cv2
 import os
-
+import nibabel as nib
 
 # In[3]:
 
@@ -112,7 +110,7 @@ def train(loader,ep,lrate,alpha):
     optimizer=torch.optim.Adam([{"params":cnn[0].parameters()},{"params":cnn[1].parameters()},{"params":cnn[2].parameters()}],lrate)
     for epoch in range(ep):
         losses=[]
-        for _,d in enumerate(loader):
+        for _, d in tqdm(enumerate(loader), desc=f"Training epoch {epoch}"):
             if (_>0):
                 d.to(device)
                 positive=positive_pair(d)
@@ -137,7 +135,6 @@ def train(loader,ep,lrate,alpha):
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-                #print(epoch,_,loss.item())
                 losses.append(loss.item())
             negative=d
         print('epoch:',epoch,'loss:',np.array(losses).mean())
@@ -151,7 +148,7 @@ def train(loader,ep,lrate,alpha):
 
 def output(nets,images):
     ret=np.zeros((len(images),3,nets[0].output_dim))
-    loader=torch.utils.data.DataLoader(dataset=images,batch_size=len(images),shuffle=False)
+    loader=torch.utils.data.DataLoader(dataset=images,batch_size=len(images),num_workers=16,shuffle=False)
     with torch.no_grad():
         for _,d in enumerate(loader):
             # Generate slices
@@ -169,7 +166,6 @@ def output(nets,images):
 # In[9]:
 
 
-import nibabel as nib
 #img=nib.load('MPRFlirt_0.nii.gz')
 #imgdata=np.array(img.get_fdata())
 #print(imgdata.shape)
@@ -179,25 +175,25 @@ import nibabel as nib
 
 
 #Collect all files with nii.gz 
-def scan_files_and_read(path='.'):
+def scan_files_and_read(path='data/'):
     all_files=os.walk(path)
     useful_files=[]
     for (d,b,c) in all_files:
         for cc in c:
             #print(cc)
             if cc.find('nii.gz')>=0:
-                useful_files.append(cc)
+                useful_files.append(os.path.join(path, cc))
                 
     avgpool=nn.AvgPool3d(kernel_size=2)
     filenames=[]
-    for filename in useful_files:
+    for filename in tqdm(useful_files, desc="Caching dataset..."):
         img=nib.load(filename)
         imgdata=np.array(img.get_fdata())
         imgdata=imgdata[None,:,:,:]
         torchimg=torch.from_numpy(imgdata).to(device)
         out=avgpool(torchimg)
         out=out.squeeze(0)
-        
+
         new_filename=filename[:-7]
         #print(new_filename)
         torch.save(out,new_filename)
@@ -222,8 +218,8 @@ class Loaded_File():
     def __len__(self):
         return len(self.filename)
 loaded_files=Loaded_File(filenames)
-batch_size=8
-dataloader=torch.utils.data.DataLoader(dataset=loaded_files,batch_size=batch_size,shuffle=True,drop_last=True)
+batch_size=32
+dataloader=torch.utils.data.DataLoader(dataset=loaded_files,batch_size=batch_size, num_workers=32,shuffle=True,drop_last=True)
 
 
 # In[21]:
@@ -235,6 +231,7 @@ cnns=train(dataloader,6,3e-5,40)
 # In[22]:
 
 
+torch.save(cnns, "pretrained_cnns")
 features=output(cnns,loaded_files)
 
 
