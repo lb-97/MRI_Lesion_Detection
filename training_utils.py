@@ -21,9 +21,9 @@ class TrainingModel(pl.LightningModule):
         return parent_parser
 
     def __init__(self, args: argparse.ArgumentParser,
-                 models: Dict[str:Type[nn.Module]], model_args: Dict[str:Dict],
-                 model_forward_args: Dict[str:Dict], model_order: List[str],
-                 metrics: Dict[str:Type[Metric]]) -> None:
+                 models: Dict[str, Type[nn.Module]], model_args: Dict[str,Dict],
+                 model_forward_args: Dict[str,Dict], model_order: List[str],
+                 metrics: Dict[str,Type[Metric]]) -> None:
         """A utility class to wrap models for training using pytorch lightning.
 
         Args:
