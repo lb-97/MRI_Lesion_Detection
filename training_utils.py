@@ -44,7 +44,7 @@ class TrainingModel(pl.LightningModule):
 
         # Load the modules
         for name, model in models.items():
-            setattr(self, name, model(**args[name]))
+            setattr(self, name, model(**model_args[name]))
 
         # Save hyperparameters
         log_param_dict = {}
@@ -64,6 +64,9 @@ class TrainingModel(pl.LightningModule):
         return o(params=self.parameters(),
                  lr=self.hparams.lr,
                  weight_decay=self.hparams.weight_decay)
+
+    def forward(self):
+        pass
 
     def training_step(self, batch, *args, **kwargs):
         input, target = batch

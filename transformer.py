@@ -64,8 +64,8 @@ class TransformerBackbone(nn.Module):
         ])
 
         # Positional encoding for injecting positional info
-        self.pos_enc = nn.parameter(
-            torch.nn(1, n_hidden, max_length)
+        self.pos_enc = nn.Parameter(
+            torch.randn(1, n_hidden, max_length)
         )
 
         # Masked token
@@ -100,7 +100,8 @@ class MultiViewTransformer(TransformerBackbone):
         super().__init__(**kwargs)
 
         # Create direction embeddings
-        self.dir_emb = nn.Parameter(torch.randn(1, 1, 3, kwargs['n_hidden']))
+        n_hidden = kwargs['n_hidden'] if 'n_hidden' in kwargs.keys() else 10
+        self.dir_emb = nn.Parameter(torch.randn(1, 1, 3, n_hidden))
 
     def apply_dir_emb(self, x):
         return x+self.dir_emb
