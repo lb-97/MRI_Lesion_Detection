@@ -29,7 +29,7 @@ class TransformerLayer(nn.Module):
         # x shape: [B, T, C]
 
         # First pass through attention
-        x = x + self.attn(x, x)
+        x = x + self.attn(x, x, x)[0]
 
         # Then pass through FF
         return x + self.ff(x)
@@ -43,21 +43,21 @@ class TransformerBackbone(nn.Module):
 
     def __init__(
                 self,
-                n_hidden=64,
-                n_heads=4,
+                n_hidden=10,
+                n_heads=2,
                 n_layers=4,
                 mlp_expansion=2,
                 norm=False,
                 lin_kqv=False,
                 mask_perc=0.1,
-                max_length=128
+                max_length=512
             ) -> None:
 
         super().__init__()
 
         # Store info and get layers
         self.mask_perc = mask_perc
-        self.layers = nn.ModuleList([
+        self.layers = nn.Sequential(*[
             TransformerLayer(
                 n_hidden, n_heads, mlp_expansion, norm, lin_kqv
             ) for _ in range(n_layers)
@@ -65,11 +65,11 @@ class TransformerBackbone(nn.Module):
 
         # Positional encoding for injecting positional info
         self.pos_enc = nn.Parameter(
-            torch.randn(1, n_hidden, max_length)
+            torch.randn(1, max_length, n_hidden)
         )
 
         # Masked token
-        self.masked_token = nn.Parameter(torch.randn(1, 1, n_hidden))
+        self.masked_token = nn.Parameter(torch.randn(1, n_hidden))
 
     def rand_mask(self, x):
         num_mask = int(x.shape[1]*self.mask_perc)
@@ -81,7 +81,7 @@ class TransformerBackbone(nn.Module):
         return x
 
     def apply_pos_enc(self, x):
-        return x+self.pos_enc
+        return x+self.pos_enc[:,:x.shape[1]]
 
     def forward(self, x, mask=False):
         if mask:
@@ -95,13 +95,14 @@ class TransformerBackbone(nn.Module):
         return self.layers(x)
 
 
-class MultiViewTransformer(TransformerBackbone):
+class MultiViewTransformer(nn.Module):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__()
 
         # Create direction embeddings
         n_hidden = kwargs['n_hidden'] if 'n_hidden' in kwargs.keys() else 10
         self.dir_emb = nn.Parameter(torch.randn(1, 1, 3, n_hidden))
+        self.backbone = TransformerBackbone(**kwargs)
 
     def apply_dir_emb(self, x):
         return x+self.dir_emb
@@ -109,4 +110,4 @@ class MultiViewTransformer(TransformerBackbone):
     def forward(self, x, mask=True):
         B, T, _, C = x.shape
         input_reshaped = self.apply_dir_emb(x).flatten(1, 2)
-        return super()(input_reshaped, mask).reshape(B, T, 3, C)
+        return self.backbone(input_reshaped, mask).reshape(B, T, 3, C)

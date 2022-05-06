@@ -92,13 +92,20 @@ class cnn_multi_dim(nn.Module):
             y=nn.AvgPool2d(kernel_size=[x.shape[1],1],stride=[x.shape[1],1])(y)
             y=y.view(y.shape[1],y.shape[2])
             return y
+    def forward_2(self,x):
+            y=x.contiguous().view([x.shape[1]*x.shape[0],1,x.shape[2],x.shape[3]])
+            y=self.conv(y)
+            y=y.view(y.size(0),-1)
+            y=self.out(y)
+            y=y.view(x.shape[0],x.shape[1],y.shape[1])
+            return y
 
 
 # In[7]:
 
 
-def train(loader, device, ep,lrate,alpha):
-    cnn=[cnn_multi_dim(0),cnn_multi_dim(1),cnn_multi_dim(2)]
+def train(loader,ep,lrate,alpha,outdim=10):
+    cnn=[cnn_multi_dim(0,outdim),cnn_multi_dim(1,outdim),cnn_multi_dim(2,outdim)]
     for net in cnn:
         net.to(device)
     optimizer=torch.optim.Adam([{"params":cnn[0].parameters()},{"params":cnn[1].parameters()},{"params":cnn[2].parameters()}],lrate)
@@ -140,9 +147,10 @@ def train(loader, device, ep,lrate,alpha):
 # In[8]:
 
 
-def output(nets,images,device):
-    ret=torch.zeros((len(images),3,nets[0].output_dim), device=device)
-    loader=torch.utils.data.DataLoader(dataset=images,batch_size=8,num_workers=16,shuffle=False)
+#Do not use output
+def output(nets,images):
+    ret=np.zeros((len(images),3,nets[0].output_dim))
+    loader=torch.utils.data.DataLoader(dataset=images,batch_size=len(images),num_workers=16,shuffle=False)
     with torch.no_grad():
         for _,d in enumerate(loader):
             # Generate slices
@@ -157,7 +165,32 @@ def output(nets,images,device):
     
 
 
-# In[9]:
+# In[19]:
+
+
+#Use output_2 instead
+#return: [batch_size, 3, slice_count, feature_count]
+def output_2(nets,images,device):
+    rets = []
+    loader=torch.utils.data.DataLoader(dataset=images,batch_size=16,num_workers=16,shuffle=False)
+    with torch.no_grad():
+        for _,d in enumerate(loader):
+            ret = torch.zeros((d.shape[0],3,max(images[0].shape[0],images[0].shape[1]),nets[0].output_dim), device=device)
+            # Generate slices
+            d = d.to(device)
+            tran_d=[d,d.permute(0,2,1,3),d.permute(0,3,1,2)]
+            pred_d=[_,_,_]
+            for dim in range(3):
+                nets[dim].eval()
+                pred_d[dim]=nets[dim].forward_2(tran_d[dim].float())
+                ret[:,dim,0:pred_d[dim].shape[1],:]=pred_d[dim]
+            for x in ret:
+                rets.append(x)
+    return rets
+    
+
+
+# In[10]:
 
 
 #img=nib.load('MPRFlirt_0.nii.gz')
@@ -165,7 +198,7 @@ def output(nets,images,device):
 #print(imgdata.shape)
 
 
-# In[10]:
+# In[11]:
 
 
 #Collect all files with nii.gz 
@@ -201,12 +234,11 @@ def scan_files_and_read(path='data/', cache_path='cached_mri/', device='cpu'):
     return filenames
 
 
-# In[11]:
+# In[12]:
 
 
 
-
-# In[20]:
+# In[13]:
 class Loaded_File():
     def __init__(self,filename,cache_path='cached_mri'):
         self.filename=filename
@@ -234,37 +266,7 @@ if __name__ == "__main__":
     loaded_files=Loaded_File(filenames)
     batch_size=8
     dataloader=torch.utils.data.DataLoader(dataset=loaded_files,batch_size=batch_size, num_workers=8,shuffle=True,drop_last=True)
-
-
-# In[21]:
-
-
     cnns=train(dataloader, device ,6,3e-5,40)
-
-
-# In[22]:
-
-
-#     torch.save(cnns, "pretrained_cnns")
-#     features=output(cnns,loaded_files)
-#
-#
-# # In[23]:
-#
-#
-#     print(features.shape)
-#     features=features-np.mean(features,axis=0)
-#     print(features[:,:,:])
-#
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
 
 
 

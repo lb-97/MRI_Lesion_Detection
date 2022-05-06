@@ -17,7 +17,7 @@ class TrainingModel(pl.LightningModule):
         parser.add_argument("--optimizer", type=str, default="RAdam")
         parser.add_argument("--loss_type",
                             type=str,
-                            default="CosineSimilarity")
+                            default="SmoothL1Loss")
         return parent_parser
 
     def __init__(self, args: argparse.ArgumentParser,
@@ -77,6 +77,6 @@ class TrainingModel(pl.LightningModule):
         loss = self.loss(input, batch)
 
         # Find the metrics
-        metrics = {n: v(input, batch) for n, v in self.metric.items()}
-        self.log_dict(metrics)
-        return loss
+        # metrics = {n: v(input, batch) for n, v in self.metric.items()}
+        # self.log_dict(metrics)
+        return {'loss': loss}
