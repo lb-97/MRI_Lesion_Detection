@@ -50,9 +50,9 @@ class TrainingModel(pl.LightningModule):
         log_param_dict = {}
         for model_name, model_arg_dict in model_args.items():
             for arg_name, arg_val in model_arg_dict.items():
-                log_param_dict[model_name+'-'+arg_name] = arg_val
+                log_param_dict[f'{model_name}-{arg_name}'] = arg_val
         self.save_hyperparameters(log_param_dict)
-        
+
         # Finally log self params too
         self.save_hyperparameters(args)
 
@@ -69,16 +69,14 @@ class TrainingModel(pl.LightningModule):
         pass
 
     def training_step(self, batch, *args, **kwargs):
-        input, target = batch
         for model_name in self.model_order:
-            input = getattr(self,
-                            model_name)(input,
+            input = getattr(self, model_name)(batch,
                                         **self.model_forward_args[model_name])
 
         # Find the loss
-        loss = self.loss(input, target)
+        loss = self.loss(input, batch)
 
         # Find the metrics
-        metrics = {n: v(input, target) for n, v in self.metric.items()}
+        metrics = {n: v(input, batch) for n, v in self.metric.items()}
         self.log_dict(metrics)
         return loss

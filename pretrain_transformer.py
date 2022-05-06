@@ -2,7 +2,8 @@ import torch
 import torch.nn as nn
 from torch.utils.data import (DataLoader, Dataset)
 from torchmetrics import MeanAbsoluteError, MeanAbsolutePercentageError
-from CNN import PretrainingDataset, cnn_multi_dim
+from tqdm import tqdm
+from CNN import PretrainingDataset, cnn_multi_dim, output
 
 from transformer import MultiViewTransformer
 from training_utils import TrainingModel
@@ -15,7 +16,7 @@ class PretrainTransformerDataset(Dataset):
     def __init__(
             self,
             nets: nn.Module,
-            image_loader: DataLoader,
+            image_dataset: Dataset,
             cache_root: str = './transformer_pretraining_dataset/') -> None:
         """Dataset class for pretraining the transformer given cnn
 
@@ -34,28 +35,16 @@ class PretrainTransformerDataset(Dataset):
         if not osp.isdir(cache_root):
             os.makedirs(cache_root)
 
-            # First step is to generate a dataset of cnn representations
-            with torch.no_grad():
-                nets.to(device)
-                for _,d in enumerate(image_loader):
-                    d = d.to(device)
-                    ret=torch.zeros((len(d),3,nets[0].output_dim), device=device)
-                    tran_d=[d,d.permute(0,2,1,3),d.permute(0,3,1,2)]
-                    pred_d=[_,_,_]
-                    for dim in range(3):
-                        nets[dim].eval()
-                        pred_d[dim]=nets[dim](tran_d[dim].float())
-                        ret[:,dim,:]=pred_d[dim]
-
-                    for x in ret:
-                        # Store the representations
-                        name = osp.join(cache_root, str(len(self.lst_data_dir)))
-                        torch.save(x, name)
-                        self.lst_data_dir.append(name)
-        # If exist, load all the .pt files inside
+            rets = output(nets, image_dataset, device)
+            for x in rets:
+                # Store the representations
+                name = osp.join(cache_root, str(len(self.lst_data_dir)))
+                torch.save(x, name)
+                self.lst_data_dir.append(name)
         else:
             for f in os.listdir(cache_root):
-                self.lst_data_dir.append(f)
+                name = os.path.join(cache_root, f)
+                self.lst_data_dir.append(name)
 
     def __getitem__(self, idx):
         return torch.load(self.lst_data_dir[idx])
@@ -94,14 +83,9 @@ if __name__ == '__main__':
     image_dataset = PretrainingDataset(
         path=args.imaging_dataset_dir, cache_path=args.imaging_dataset_cache_dir  
     )
-    image_loader = DataLoader(image_dataset,
-                              batch_size=args.batch_size_generate,
-                              shuffle=True,
-                              num_workers=args.n_worker_generate)
-
     # Instantiate pretraining dataset
     dataset = PretrainTransformerDataset(nets=cnn_models,
-                                         image_loader=image_loader,
+                                         image_dataset=image_dataset,
                                          cache_root=args.cache_root)
     loader = DataLoader(dataset,
                         batch_size=args.batch_size_pretrain,

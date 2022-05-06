@@ -25,7 +25,6 @@ import nibabel as nib
 def positive_pair(data, device):
     [batch_size,q,h,w]=data.shape
     ret=data
-    ret.to(device)
     NOISE_R=0.7
     FLIP_R=0.6
     r1=random.random()
@@ -66,7 +65,7 @@ def data_padding(data):
 
 # Different shape on different slices
 class cnn_multi_dim(nn.Module):
-    def __init__(self,dim=0,output_dim=10):
+    def __init__(self,dim0,output_dim=10):
         super(cnn_multi_dim,self).__init__()
         self.conv=nn.Sequential(
             nn.Conv2d(1,8,5,1,0),
@@ -106,8 +105,8 @@ def train(loader, device, ep,lrate,alpha):
     for epoch in range(ep):
         losses=[]
         for _, d in tqdm(enumerate(loader), desc=f"Training epoch {epoch}"):
+            d = d.to(device)
             if (_>0):
-                d.to(device)
                 positive=positive_pair(d, device)
                 # Generate slices
                 tran_d=[d,d.permute(0,2,1,3),d.permute(0,3,1,2)]
@@ -141,19 +140,19 @@ def train(loader, device, ep,lrate,alpha):
 # In[8]:
 
 
-def output(nets,images):
-    ret=np.zeros((len(images),3,nets[0].output_dim))
-    loader=torch.utils.data.DataLoader(dataset=images,batch_size=len(images),num_workers=16,shuffle=False)
+def output(nets,images,device):
+    ret=torch.zeros((len(images),3,nets[0].output_dim), device=device)
+    loader=torch.utils.data.DataLoader(dataset=images,batch_size=8,num_workers=16,shuffle=False)
     with torch.no_grad():
         for _,d in enumerate(loader):
             # Generate slices
-            d.to(device)
+            d = d.to(device)
             tran_d=[d,d.permute(0,2,1,3),d.permute(0,3,1,2)]
             pred_d=[_,_,_]
             for dim in range(3):
                 nets[dim].eval()
                 pred_d[dim]=nets[dim](tran_d[dim].float())
-                ret[:,dim,:]=pred_d[dim].numpy()
+                ret[:,dim,:]=pred_d[dim]
     return ret
     
 
@@ -209,10 +208,11 @@ def scan_files_and_read(path='data/', cache_path='cached_mri/', device='cpu'):
 
 # In[20]:
 class Loaded_File():
-    def __init__(self,filename):
+    def __init__(self,filename,cache_path='cached_mri'):
         self.filename=filename
+        self.cache_path = cache_path
     def __getitem__(self,i):
-        return torch.load(self.filename[i])
+        return torch.load(os.path.join(self.cache_path, self.filename[i]))
     def __len__(self):
         return len(self.filename)
 
@@ -229,8 +229,8 @@ class PretrainingDataset(Dataset):
 
 if __name__ == "__main__":
     torch.multiprocessing.set_start_method('forkserver', force=True)    
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    filenames=scan_files_and_read(device)
+    device = torch.device("cuda:0")
+    filenames=scan_files_and_read()
     loaded_files=Loaded_File(filenames)
     batch_size=8
     dataloader=torch.utils.data.DataLoader(dataset=loaded_files,batch_size=batch_size, num_workers=8,shuffle=True,drop_last=True)

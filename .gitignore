@@ -1,6 +1,9 @@
-*/.DS_Store
-*/__pycache__/
+**/.DS_Store
+**/__pycache__/
 data/
 cached_mri/
 cnn_checkpoints/
-transformer_pretraining_dataset/
+pretrain_transformer_dataset_cache/
+lightning_logs/
+
+
