@@ -5,5 +5,5 @@ cached_mri/
 cnn_checkpoints/
 pretrain_transformer_dataset_cache/
 lightning_logs/
-
+adni_data/
 

@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import pytorch_lightning as pl
 
 
 class TransformerLayer(nn.Module):
@@ -7,7 +8,6 @@ class TransformerLayer(nn.Module):
         super().__init__()
         # Attention module
         self.attn = nn.MultiheadAttention(n_hidden, n_heads, batch_first=True)
-        self.test = True
 
         # TODO: Support normalizations
         if norm:
@@ -50,7 +50,7 @@ class TransformerBackbone(nn.Module):
                 norm=False,
                 lin_kqv=False,
                 mask_perc=0.1,
-                max_length=512
+                max_length=600
             ) -> None:
 
         super().__init__()
@@ -67,6 +67,7 @@ class TransformerBackbone(nn.Module):
         self.pos_enc = nn.Parameter(
             torch.randn(1, max_length, n_hidden)
         )
+        self.n_hidden = n_hidden
 
         # Masked token
         self.masked_token = nn.Parameter(torch.randn(1, n_hidden))
@@ -95,19 +96,20 @@ class TransformerBackbone(nn.Module):
         return self.layers(x)
 
 
-class MultiViewTransformer(nn.Module):
-    def __init__(self, **kwargs):
+class MultiViewTransformer(pl.LightningModule):
+    def __init__(self, args):
         super().__init__()
+        self.save_hyperparameters(args)
 
         # Create direction embeddings
-        n_hidden = kwargs['n_hidden'] if 'n_hidden' in kwargs.keys() else 10
+        n_hidden = self.hparams.n_hidden
         self.dir_emb = nn.Parameter(torch.randn(1, 1, 3, n_hidden))
-        self.backbone = TransformerBackbone(**kwargs)
+        self.backbone = TransformerBackbone(n_hidden=args.n_hidden)
 
     def apply_dir_emb(self, x):
         return x+self.dir_emb
 
-    def forward(self, x, mask=True):
+    def forward(self, x, mask=False):
         B, T, _, C = x.shape
         input_reshaped = self.apply_dir_emb(x).flatten(1, 2)
         return self.backbone(input_reshaped, mask).reshape(B, T, 3, C)

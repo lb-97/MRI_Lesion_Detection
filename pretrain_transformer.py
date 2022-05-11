@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 from torch.utils.data import (DataLoader, Dataset)
 from torchmetrics import MeanAbsoluteError, MeanAbsolutePercentageError
-from tqdm import tqdm
 from CNN import PretrainingDataset, cnn_multi_dim, output_2
 
 from transformer import MultiViewTransformer
@@ -61,50 +60,63 @@ if __name__ == '__main__':
     torch.multiprocessing.set_start_method('forkserver', force=True)    
 
     parser = ArgumentParser()
-    parser.add_argument("--batch_size_generate", type=int, default=8)
-    parser.add_argument("--n_worker_generate", type=int, default=8)
-    parser.add_argument("--batch_size_pretrain", type=int, default=8)
-    parser.add_argument("--n_worker_pretrain", type=int, default=8)
+    parser.add_argument("--n_hidden", type=int, default=10)
+    parser.add_argument("--batch_size_generate", type=int, default=32)
+    parser.add_argument("--n_worker_generate", type=int, default=32)
+    parser.add_argument("--batch_size_pretrain", type=int, default=6)
+    parser.add_argument("--n_worker_pretrain", type=int, default=6)
     parser.add_argument("--cache_root",
                         type=str,
                         default="./pretrain_transformer_dataset_cache/")
     parser.add_argument("--imaging_dataset_dir", type=str, default="./data/")
     parser.add_argument("--imaging_dataset_cache_dir", type=str, default="./cached_mri")
     parser.add_argument("--cnn_checkpoint_path", type=str, default="./cnn_checkpoints/checkpointat5.pth")
+    parser.add_argument("--store_checkpoint_path", type=str, default="./transformer_checkpoints/")
+    parser.add_argument("--pretrain", type=int, default=1)
+
+    parser = Trainer.add_argparse_args(parser)
     parser = TrainingModel.add_model_specific_args(parser)
     args = parser.parse_args()
 
-    # CNN model
-    cnn_models = nn.ModuleList([cnn_multi_dim(i) for i in range(3)])
-    loaded = torch.load(args.cnn_checkpoint_path)
-    for model_idx, model in enumerate(cnn_models):
-        model.load_state_dict(loaded[model_idx])
+    if not args.pretrain:
+        model = MultiViewTransformer(args)
+        torch.save(model.state_dict(), args.store_checkpoint_path)
+    else:
+        # CNN model
+        cnn_models = nn.ModuleList([cnn_multi_dim(i, args.n_hidden) for i in range(3)])
+        loaded = torch.load(args.cnn_checkpoint_path)
+        for model_idx, model in enumerate(cnn_models):
+            model.load_state_dict(loaded[model_idx])
 
-    # Load image dataset
-    image_dataset = PretrainingDataset(
-        path=args.imaging_dataset_dir, cache_path=args.imaging_dataset_cache_dir  
-    )
-    # Instantiate pretraining dataset
-    dataset = PretrainTransformerDataset(nets=cnn_models,
-                                         image_dataset=image_dataset,
-                                         cache_root=args.cache_root)
-    loader = DataLoader(dataset,
-                        batch_size=args.batch_size_pretrain,
-                        shuffle=True,
-                        num_workers=args.n_worker_pretrain)
+        # Load image dataset
+        image_dataset = PretrainingDataset(
+            path=args.imaging_dataset_dir, cache_path=args.imaging_dataset_cache_dir  
+        )
+        # Instantiate pretraining dataset
+        dataset = PretrainTransformerDataset(nets=cnn_models,
+                                             image_dataset=image_dataset,
+                                             cache_root=args.cache_root)
+        loader = DataLoader(dataset,
+                            batch_size=args.batch_size_pretrain,
+                            shuffle=True,
+                            num_workers=args.n_worker_pretrain)
 
-    # Instantiate training model
-    trainer_model = TrainingModel(
-        args=args,
-        model_args={"Transformer": {}},
-        models={"Transformer": MultiViewTransformer},
-        model_forward_args={"Transformer": {
-            "mask": True
-        }},
-        model_order=["Transformer"],
-        metrics={"MAE": MeanAbsoluteError(), "MAPE": MeanAbsolutePercentageError()}
-    )
+        # Instantiate training model
+        trainer_model = TrainingModel(
+            args=args,
+            model_args={"Transformer": {"args": args}},
+            models={"Transformer": MultiViewTransformer},
+            model_forward_args={"Transformer": {
+                "mask": True
+            }},
+            model_order=["Transformer"],
+            metrics={"MAE": MeanAbsoluteError(), "MAPE": MeanAbsolutePercentageError()}
+        )
 
-    # Instantiate trainer
-    trainer = Trainer(max_epochs=50, gpus=1)
-    trainer.fit(trainer_model, loader)
+        # Instantiate trainer
+        trainer = Trainer.from_argparse_args(args, strategy='ddp', gpus=2)
+        trainer.fit(trainer_model, loader)
+        
+        # Save the transformer model weight
+        torch.save(trainer_model.Transformer.state_dict(), args.store_checkpoint_path)
+

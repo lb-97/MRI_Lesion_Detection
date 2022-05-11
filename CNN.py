@@ -5,14 +5,15 @@
 
 # In[2]:
 
-from tqdm import tqdm
 import torch
 import torch.nn as nn
+import nibabel as nib
+from argparse import ArgumentParser
+from tqdm import tqdm
 from torch.utils.data import Dataset
 import numpy as np
 import random
 import os
-import nibabel as nib
 
 # In[3]:
 
@@ -104,7 +105,7 @@ class cnn_multi_dim(nn.Module):
 # In[7]:
 
 
-def train(loader,ep,lrate,alpha,outdim=10):
+def train(loader,ep,lrate,alpha,device,outdim=10):
     cnn=[cnn_multi_dim(0,outdim),cnn_multi_dim(1,outdim),cnn_multi_dim(2,outdim)]
     for net in cnn:
         net.to(device)
@@ -139,8 +140,6 @@ def train(loader,ep,lrate,alpha,outdim=10):
                 losses.append(loss.item())
             negative=d
         print('epoch:',epoch,'loss:',np.array(losses).mean())
-        state={0:cnn[0].state_dict(),1:cnn[1].state_dict(),2:cnn[0].state_dict()}
-        torch.save(state,'checkpointat{}.pth'.format(epoch))
     return cnn
 
 
@@ -175,7 +174,7 @@ def output_2(nets,images,device):
     loader=torch.utils.data.DataLoader(dataset=images,batch_size=16,num_workers=16,shuffle=False)
     with torch.no_grad():
         for _,d in enumerate(loader):
-            ret = torch.zeros((d.shape[0],3,max(images[0].shape[0],images[0].shape[1]),nets[0].output_dim), device=device)
+            ret = torch.zeros((d.shape[0],3,max(list(images[0].shape)),nets[0].output_dim), device=device)
             # Generate slices
             d = d.to(device)
             tran_d=[d,d.permute(0,2,1,3),d.permute(0,3,1,2)]
@@ -187,7 +186,16 @@ def output_2(nets,images,device):
             for x in ret:
                 rets.append(x)
     return rets
-    
+
+
+def output_single(nets,image):
+    ret = torch.zeros((image.shape[0],3,max(list(image.shape[1:])),nets[0].output_dim), device=image.device)
+    tran_d=[image,image.permute(0,2,1,3),image.permute(0,3,1,2)]
+    for dim in range(3):
+        pred_temp=nets[dim].forward_2(tran_d[dim].float())
+        ret[:,dim,:pred_temp.shape[1],:]=pred_temp
+    return ret
+
 
 
 # In[10]:
@@ -260,13 +268,27 @@ class PretrainingDataset(Dataset):
 
 
 if __name__ == "__main__":
-    torch.multiprocessing.set_start_method('forkserver', force=True)    
+
+    parser = ArgumentParser()
+    parser.add_argument("--hidden_size", type=int, default=10)
+    parser.add_argument("--checkpoint_path", type=str, default="")
+    parser.add_argument("--epochs", type=int, default=40)
+    parser.add_argument("--pretrain", type=int, default=1)
+    parser.add_argument("--raw_dataset", type=str, default='./data/')
+    parser.add_argument("--dataset_cache", type=str, default='./cached_mri/')
+    args = parser.parse_args()
+
     device = torch.device("cuda:0")
-    filenames=scan_files_and_read()
-    loaded_files=Loaded_File(filenames)
-    batch_size=8
-    dataloader=torch.utils.data.DataLoader(dataset=loaded_files,batch_size=batch_size, num_workers=8,shuffle=True,drop_last=True)
-    cnns=train(dataloader, device ,6,3e-5,40)
-
-
+    filenames=scan_files_and_read(args.raw_dataset, args.dataset_cache)
+    loaded_files=Loaded_File(filenames, args.dataset_cache)
+    batch_size=16
+    dataloader=torch.utils.data.DataLoader(dataset=loaded_files,batch_size=batch_size,shuffle=True,drop_last=True)
+    epochs = args.epochs if args.pretrain else 0
+    cnns=train(dataloader, epochs,1e-3,3e-5, device, outdim=args.hidden_size)
+    
+    # Store in CPU
+    for c in cnns:
+        c.to('cpu')
+    state={0:cnns[0].state_dict(),1:cnns[1].state_dict(),2:cnns[0].state_dict()}
+    torch.save(state, args.checkpoint_path)
 
