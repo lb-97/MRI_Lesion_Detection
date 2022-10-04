@@ -1,0 +1,4 @@
+  File "/scratch/vb2183/hcp/MRI_Lesion_Detection/CNN.py", line 309
+    parser.add_argument("--beta2", type=float, default=1)
+    ^
+SyntaxError: invalid syntax

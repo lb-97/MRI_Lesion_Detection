@@ -1,0 +1,9 @@
+len(trainSubjects):  932
+Traceback (most recent call last):
+  File "/scratch/vb2183/hcp/MRI_Lesion_Detection/CNN.py", line 332, in <module>
+    cnns=train(trainLoader,valLoader,epochs,1e-3,args.alpha,device, outdim=args.hidden_size,beta1=args.beta1,beta2=args.beta2)
+  File "/scratch/vb2183/hcp/MRI_Lesion_Detection/CNN.py", line 115, in train
+    cnn=[cnn_multi_dim(0,outdim),cnn_multi_dim(1,outdim),cnn_multi_dim(2,outdim)]
+  File "/scratch/vb2183/hcp/MRI_Lesion_Detection/CNN.py", line 85, in __init__
+    self.out=nn.Linear(32*8*8,out_dim)
+NameError: name 'out_dim' is not defined
